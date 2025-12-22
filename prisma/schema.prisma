@@ -4,18 +4,19 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Product {
-  id          Int      @id @default(autoincrement())
-  title       String
-  slug        String   @unique
-  category    String
-  specsJson   Json
-  imageUrl    String
-  isFeatured  Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  title      String
+  slug       String   @unique
+  category   String
+  specsJson  String   // JSON.stringify()
+  imageUrl   String
+  isFeatured Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Inquiry {
@@ -25,11 +26,11 @@ model Inquiry {
   phone     String
   productId Int?
   message   String
-  status    String   @default("PENDING") // PENDING, CONTACTED, CLOSED
+  status    String   @default("PENDING")
   createdAt DateTime @default(now())
 }
 
 model Setting {
   key   String @id
-  value Json
+  value String // JSON.stringify()
 }
