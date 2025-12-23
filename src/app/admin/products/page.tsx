@@ -34,6 +34,7 @@ interface Product {
     shortDescription?: string
     specs: Record<string, string>
     images: string[]
+    imageUrl?: string // Add this to handle direct mapping
     rentalPrice?: string
     isNew?: boolean
     isFeatured?: boolean
@@ -196,6 +197,15 @@ export default function AdminProductsPage() {
 
     const openEditModal = (product: Product) => {
         setEditProduct(product)
+        // Check both locations for image
+        let img = "";
+        if (product.images && product.images.length > 0) {
+            img = product.images[0];
+        } else if (product.imageUrl) {
+            // Fallback for types that might have imageUrl directly
+            img = product.imageUrl;
+        }
+
         setFormData({
             title: product.title,
             category: product.category,
@@ -203,7 +213,7 @@ export default function AdminProductsPage() {
             shortDescription: product.shortDescription || "",
             rentalPrice: product.rentalPrice || "",
             specs: Object.entries(product.specs || {}).map(([k, v]) => `${k}: ${v}`).join('\n'),
-            imageUrl: product.images?.[0] || "",
+            imageUrl: img,
             isNew: product.isNew || false,
             isFeatured: product.isFeatured || false,
             status: product.status || "Active"
