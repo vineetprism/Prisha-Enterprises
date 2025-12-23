@@ -4,41 +4,34 @@ import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 
 // Featured Products - Show first 4
-const products = [
-    {
-        id: "1",
-        title: "Dell PowerEdge R740 Server",
-        category: "Servers",
-        image: "/products/server.jpg",
-        slug: "dell-poweredge-r740",
-        isNew: true,
-    },
-    {
-        id: "2",
-        title: "MacBook Pro 16 M3 Max",
-        category: "Laptops",
-        image: "/products/macbook.jpg",
-        slug: "macbook-pro-16-m3",
-    },
-    {
-        id: "6",
-        title: "Dell Latitude 7440 Laptop",
-        category: "Laptops",
-        image: "/products/dell-laptop.jpg",
-        slug: "dell-latitude-7440",
-        isNew: true,
-    },
-    {
-        id: "4",
-        title: "HP Z8 G4 Workstation",
-        category: "Workstations",
-        image: "/products/workstation.jpg",
-        slug: "hp-z8-g4",
-        isNew: true,
-    },
-]
+import { db } from "@/lib/db"
 
-export function FeaturedProducts() {
+export async function FeaturedProducts() {
+    const products = await db.product.findMany({
+        where: {
+            isFeatured: true
+        },
+        take: 4,
+        orderBy: {
+            createdAt: 'desc'
+        }
+    })
+
+    // Transform if needed to match ProductCard props, but ProductCard expects:
+    // { id, title, category, image, slug, isNew? }
+    // DB returns: { id (Int), imageUrl, ... }
+
+    const formattedProducts = products.map(p => ({
+        id: String(p.id),
+        title: p.title,
+        category: p.category,
+        image: p.imageUrl,
+        slug: p.slug,
+        isNew: p.isNew
+    }))
+
+    if (formattedProducts.length === 0) return null
+
     return (
         <section className="py-24 bg-gradient-to-br from-slate-50 via-white to-cyan-50/30 relative overflow-hidden">
             {/* Decorative background elements */}
@@ -68,7 +61,7 @@ export function FeaturedProducts() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {products.map((product) => (
+                    {formattedProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}
                 </div>

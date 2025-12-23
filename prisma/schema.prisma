@@ -8,20 +8,20 @@ datasource db {
 }
 
 model Product {
-  id         Int      @id @default(autoincrement())
-  title      String
-  slug       String   @unique
-  category   String
-  description String?
+  id               Int      @id @default(autoincrement())
+  title            String
+  slug             String   @unique
+  category         String
+  specsJson        String
+  imageUrl         String
+  isFeatured       Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  rentalPrice      String?
+  description      String?
   shortDescription String?
-  status     String   @default("Active")
-  specsJson  String   // JSON.stringify()
-  imageUrl   String
-  rentalPrice String?
-  isFeatured Boolean  @default(false)
-  isNew      Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  status           String   @default("Active")
+  isNew            Boolean  @default(false)
 }
 
 model Inquiry {
@@ -29,15 +29,15 @@ model Inquiry {
   name      String
   email     String
   phone     String
-  company   String?
-  source    String   @default("contact_page")
-  product   String?  // Product name or detail
   message   String
   status    String   @default("new")
   createdAt DateTime @default(now())
+  company   String?
+  product   String?
+  source    String   @default("contact_page")
 }
 
 model Setting {
   key   String @id
-  value String // JSON.stringify()
+  value String
 }

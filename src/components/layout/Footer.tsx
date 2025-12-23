@@ -13,13 +13,13 @@ export function Footer() {
                 <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
                     {/* Company Info */}
                     <div className="space-y-4">
-                        <Link href="/" className="flex items-center gap-2">
+                        <Link href="/" className="inline-block bg-white rounded-lg p-2">
                             <Image
                                 src="/logo.png"
                                 alt="Prisha Enterprises"
                                 width={240}
                                 height={64}
-                                className="h-28 w-auto brightness-0 invert"
+                                className="h-12 w-auto object-contain"
                             />
                         </Link>
                         <p className="text-sm leading-relaxed text-slate-300">

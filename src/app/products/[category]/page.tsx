@@ -14,7 +14,7 @@ export const revalidate = 0 // Disable cache for real-time updates
 export default async function ProductListingPage({ params }: PageProps) {
     const { category } = await params
 
-    const where = category === "all" ? {} : { category: { equals: category, mode: 'insensitive' } }
+    const where = category === "all" ? {} : { category: { equals: category, mode: 'insensitive' as const } }
 
     // Fetch from Database
     const products = await db.product.findMany({
@@ -28,7 +28,6 @@ export default async function ProductListingPage({ params }: PageProps) {
         title: p.title,
         category: p.category,
         image: p.imageUrl,
-        slug: p.slug,
         slug: p.slug,
         isNew: p.isNew || p.isFeatured, // Show tag if either is true
         rentalPrice: p.rentalPrice

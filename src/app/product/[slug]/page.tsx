@@ -12,12 +12,17 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-    const products = await db.product.findMany({
-        select: { slug: true }
-    })
-    return products.map((product) => ({
-        slug: product.slug,
-    }))
+    try {
+        const products = await db.product.findMany({
+            select: { slug: true }
+        })
+        return products.map((product) => ({
+            slug: product.slug,
+        }))
+    } catch (error) {
+        console.warn("Could not fetch products for static generation, falling back to on-demand rendering:", error)
+        return []
+    }
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
