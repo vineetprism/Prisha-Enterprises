@@ -1,85 +1,7 @@
 import { CategorySidebar } from "@/components/features/CategorySidebar"
 import { ProductGrid } from "@/components/features/ProductGrid"
 
-// Mock Data - 10 Products
-const allProducts = [
-    {
-        id: "1",
-        title: "Dell PowerEdge R740 Server",
-        category: "servers",
-        image: "/products/server.jpg",
-        slug: "dell-poweredge-r740",
-        isNew: true,
-    },
-    {
-        id: "2",
-        title: "MacBook Pro 16 M3 Max",
-        category: "laptops",
-        image: "/products/macbook.jpg",
-        slug: "macbook-pro-16-m3",
-    },
-    {
-        id: "3",
-        title: "Cisco Catalyst 9300 Switch",
-        category: "networking",
-        image: "/products/switch.jpg",
-        slug: "cisco-catalyst-9300",
-    },
-    {
-        id: "4",
-        title: "HP Z8 G4 Workstation",
-        category: "workstations",
-        image: "/products/workstation.jpg",
-        slug: "hp-z8-g4",
-        isNew: true,
-    },
-    {
-        id: "5",
-        title: "Hikvision 4K NVR System",
-        category: "cctv",
-        image: "/products/nvr.jpg",
-        slug: "hikvision-4k-nvr",
-    },
-    {
-        id: "6",
-        title: "Dell Latitude 7440 Business Laptop",
-        category: "laptops",
-        image: "/products/dell-laptop.jpg",
-        slug: "dell-latitude-7440",
-        isNew: true,
-    },
-    {
-        id: "7",
-        title: "HPE ProLiant DL380 Gen10 Server",
-        category: "servers",
-        image: "/products/hpe-server.jpg",
-        slug: "hpe-proliant-dl380",
-    },
-    {
-        id: "8",
-        title: "Lenovo ThinkStation P620",
-        category: "workstations",
-        image: "/products/lenovo-workstation.jpg",
-        slug: "lenovo-thinkstation-p620",
-    },
-    {
-        id: "9",
-        title: "TP-Link Omada Business Router",
-        category: "networking",
-        image: "/products/router.jpg",
-        slug: "tplink-omada-router",
-    },
-    {
-        id: "10",
-        title: "Dahua 8-Channel PTZ Camera Kit",
-        category: "cctv",
-        image: "/products/dahua-cctv.jpg",
-        slug: "dahua-ptz-camera-kit",
-        isNew: true,
-    },
-]
-
-export const revalidate = 60
+import { db } from "@/lib/db"
 
 interface PageProps {
     params: Promise<{
@@ -87,23 +9,30 @@ interface PageProps {
     }>
 }
 
-export async function generateStaticParams() {
-    return [
-        { category: "all" },
-        { category: "servers" },
-        { category: "laptops" },
-        { category: "workstations" },
-        { category: "networking" },
-        { category: "cctv" },
-    ]
-}
+export const revalidate = 0 // Disable cache for real-time updates
 
 export default async function ProductListingPage({ params }: PageProps) {
     const { category } = await params
 
-    const filteredProducts = category === "all"
-        ? allProducts
-        : allProducts.filter(p => p.category === category)
+    const where = category === "all" ? {} : { category: { equals: category, mode: 'insensitive' } }
+
+    // Fetch from Database
+    const products = await db.product.findMany({
+        where,
+        orderBy: { createdAt: 'desc' }
+    })
+
+    // Transform database shape to frontend shape if needed
+    const filteredProducts = products.map(p => ({
+        id: String(p.id),
+        title: p.title,
+        category: p.category,
+        image: p.imageUrl,
+        slug: p.slug,
+        slug: p.slug,
+        isNew: p.isNew || p.isFeatured, // Show tag if either is true
+        rentalPrice: p.rentalPrice
+    }))
 
     const categoryTitle = category === "all"
         ? "All Products"

@@ -27,11 +27,6 @@ export function ProductCard({ product }: ProductCardProps) {
                             New Arrival
                         </Badge>
                     )}
-                    {/* Placeholder for Product Image */}
-                    <div className="w-full h-full flex items-center justify-center text-slate-400 group-hover:scale-105 transition-transform duration-500">
-                        <span className="text-xs font-medium">Product Image</span>
-                    </div>
-                    {/* 
                     <Image
                         src={product.image}
                         alt={product.title}
@@ -39,7 +34,6 @@ export function ProductCard({ product }: ProductCardProps) {
                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                         sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                    */}
                 </div>
             </CardHeader>
             <CardContent className="p-5">

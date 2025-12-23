@@ -28,7 +28,7 @@ export function Header() {
                         alt="Prisha Enterprises"
                         width={250}
                         height={50}
-                        className="h-28 w-auto object-contain"
+                        className="h-12 w-auto object-contain"
                         priority
                     />
                 </Link>

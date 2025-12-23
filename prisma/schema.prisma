@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Product {
@@ -12,9 +12,14 @@ model Product {
   title      String
   slug       String   @unique
   category   String
+  description String?
+  shortDescription String?
+  status     String   @default("Active")
   specsJson  String   // JSON.stringify()
   imageUrl   String
+  rentalPrice String?
   isFeatured Boolean  @default(false)
+  isNew      Boolean  @default(false)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -24,9 +29,11 @@ model Inquiry {
   name      String
   email     String
   phone     String
-  productId Int?
+  company   String?
+  source    String   @default("contact_page")
+  product   String?  // Product name or detail
   message   String
-  status    String   @default("PENDING")
+  status    String   @default("new")
   createdAt DateTime @default(now())
 }
 

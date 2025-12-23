@@ -5,14 +5,16 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Shield, Truck, Check } from "lucide-react"
 import { EnquiryModal } from "@/components/features/EnquiryModal"
-import { getProductBySlug, getProducts } from "@/lib/products-store"
+import { db } from "@/lib/db"
 
 interface PageProps {
     params: Promise<{ slug: string }>
 }
 
 export async function generateStaticParams() {
-    const products = getProducts()
+    const products = await db.product.findMany({
+        select: { slug: true }
+    })
     return products.map((product) => ({
         slug: product.slug,
     }))
@@ -20,7 +22,9 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params
-    const product = getProductBySlug(slug)
+    const product = await db.product.findUnique({
+        where: { slug }
+    })
 
     if (!product) {
         return { title: "Product Not Found" }
@@ -28,16 +32,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     return {
         title: `${product.title} | Prisha Enterprises`,
-        description: product.shortDescription || product.description?.substring(0, 160),
+        description: `Rent ${product.title} from Prisha Enterprises`,
     }
 }
 
 export default async function ProductPage({ params }: PageProps) {
     const { slug } = await params
-    const product = getProductBySlug(slug)
+    const product = await db.product.findUnique({
+        where: { slug }
+    })
 
     if (!product) {
         notFound()
+    }
+
+    // Parse parsing JSON specs
+    let specs = {}
+    try {
+        specs = JSON.parse(product.specsJson || '{}')
+    } catch (e) {
+        console.error("Error parsing specs", e)
     }
 
     return (
@@ -61,7 +75,7 @@ export default async function ProductPage({ params }: PageProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Product Images */}
                     <div>
-                        <ProductGallery images={product.images} title={product.title} />
+                        <ProductGallery images={[product.imageUrl]} title={product.title} />
                     </div>
 
                     {/* Product Info */}
@@ -71,25 +85,33 @@ export default async function ProductPage({ params }: PageProps) {
                                 <Badge variant="outline" className="text-cyan-600 border-cyan-200 bg-cyan-50">
                                     {product.category}
                                 </Badge>
-                                {product.isNew && (
+                                {product.isFeatured && (
                                     <Badge className="bg-gradient-to-r from-cyan-500 to-blue-500">New</Badge>
                                 )}
                                 {product.status === "Low Stock" && (
                                     <Badge className="bg-amber-500">Low Stock</Badge>
                                 )}
+                                {product.status === "Out of Stock" && (
+                                    <Badge className="bg-red-500">Out of Stock</Badge>
+                                )}
                             </div>
                             <h1 className="text-3xl md:text-4xl font-bold text-navy-900 mb-4">
                                 {product.title}
                             </h1>
+                            {product.shortDescription && (
+                                <p className="text-xl text-slate-500 mb-4 font-light">
+                                    {product.shortDescription}
+                                </p>
+                            )}
                             {product.rentalPrice && (
                                 <div className="mb-4">
                                     <span className="text-sm text-slate-500">Rental Price</span>
-                                    <p className="text-2xl font-bold text-cyan-600">{product.rentalPrice}</p>
+                                    <p className="text-2xl font-bold text-cyan-600">₹{product.rentalPrice}/month</p>
                                 </div>
                             )}
-                            <p className="text-lg text-slate-600 leading-relaxed">
-                                {product.description}
-                            </p>
+                            <div className="text-lg text-slate-600 leading-relaxed whitespace-pre-wrap">
+                                {product.description || `${product.title} is a high-quality ${product.category} available for rent.`}
+                            </div>
                         </div>
 
                         {/* Key Features */}
@@ -109,14 +131,14 @@ export default async function ProductPage({ params }: PageProps) {
                         </div>
 
                         {/* Specifications */}
-                        {product.specs && Object.keys(product.specs).length > 0 && (
+                        {specs && Object.keys(specs).length > 0 && (
                             <div className="bg-slate-50 rounded-xl p-6">
                                 <h2 className="text-lg font-semibold text-navy-900 mb-4">Specifications</h2>
                                 <div className="grid grid-cols-1 gap-3">
-                                    {Object.entries(product.specs).map(([key, value]) => (
+                                    {Object.entries(specs).map(([key, value]) => (
                                         <div key={key} className="flex items-start justify-between py-2 border-b border-slate-200 last:border-0">
                                             <span className="text-slate-600 font-medium">{key}</span>
-                                            <span className="text-navy-900 text-right max-w-[60%]">{value}</span>
+                                            <span className="text-navy-900 text-right max-w-[60%]">{value as React.ReactNode}</span>
                                         </div>
                                     ))}
                                 </div>
