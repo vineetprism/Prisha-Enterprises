@@ -34,7 +34,7 @@ interface Product {
     shortDescription?: string
     specs: Record<string, string>
     images: string[]
-    imageUrl?: string // Add this to handle direct mapping
+    imageUrl?: string
     rentalPrice?: string
     isNew?: boolean
     isFeatured?: boolean
