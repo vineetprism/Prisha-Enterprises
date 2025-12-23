@@ -554,28 +554,20 @@ export default function AdminProductsPage() {
                                     className="hidden"
                                     id="image-upload"
                                     accept="image/*"
-                                    onChange={async (e) => {
+                                    onChange={(e) => {
                                         const file = e.target.files?.[0]
                                         if (!file) return
 
-                                        // Set loading state if you have one, or just show uploading text
-                                        const formData = new FormData()
-                                        formData.append('file', file)
-
-                                        try {
-                                            const res = await fetch('/api/upload', {
-                                                method: 'POST',
-                                                body: formData
-                                            })
-                                            const data = await res.json()
-
-                                            if (data.url) {
-                                                setFormData(prev => ({ ...prev, imageUrl: data.url }))
-                                            }
-                                        } catch (err) {
-                                            console.error('Upload failed', err)
-                                            alert('Upload failed')
+                                        if (file.size > 800 * 1024) {
+                                            alert("Image size too large! Please upload under 800KB.")
+                                            return
                                         }
+
+                                        const reader = new FileReader()
+                                        reader.onloadend = () => {
+                                            setFormData(prev => ({ ...prev, imageUrl: reader.result as string }))
+                                        }
+                                        reader.readAsDataURL(file)
                                     }}
                                 />
                                 <Label
@@ -714,27 +706,20 @@ export default function AdminProductsPage() {
                                     className="hidden"
                                     id="edit-image-upload"
                                     accept="image/*"
-                                    onChange={async (e) => {
+                                    onChange={(e) => {
                                         const file = e.target.files?.[0]
                                         if (!file) return
 
-                                        const formData = new FormData()
-                                        formData.append('file', file)
-
-                                        try {
-                                            const res = await fetch('/api/upload', {
-                                                method: 'POST',
-                                                body: formData
-                                            })
-                                            const data = await res.json()
-
-                                            if (data.url) {
-                                                setFormData(prev => ({ ...prev, imageUrl: data.url }))
-                                            }
-                                        } catch (err) {
-                                            console.error('Upload failed', err)
-                                            alert('Upload failed')
+                                        if (file.size > 800 * 1024) {
+                                            alert("Image size too large! Please upload under 800KB.")
+                                            return
                                         }
+
+                                        const reader = new FileReader()
+                                        reader.onloadend = () => {
+                                            setFormData(prev => ({ ...prev, imageUrl: reader.result as string }))
+                                        }
+                                        reader.readAsDataURL(file)
                                     }}
                                 />
                                 <Label
