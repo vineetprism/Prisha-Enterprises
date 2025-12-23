@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -21,7 +21,24 @@ interface ContactFormData {
 export default function ContactPage() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
+    const [settings, setSettings] = useState({
+        phone: "+91 98765 43210",
+        email: "contact@prishaenterprises.in",
+        address: "B-123, Sector 63, Noida",
+        gst: "07AADCP1234F1Z5"
+    })
     const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormData>()
+
+    useEffect(() => {
+        fetch('/api/settings')
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.phone) {
+                    setSettings(data)
+                }
+            })
+            .catch(err => console.error(err))
+    }, [])
 
     const onSubmit = async (data: ContactFormData) => {
         setIsSubmitting(true)
@@ -84,8 +101,8 @@ export default function ContactPage() {
                                     <Phone className="h-7 w-7" />
                                 </div>
                                 <h3 className="text-lg font-bold mb-2">Call Us</h3>
-                                <a href="tel:+917982646008" className="text-2xl font-semibold hover:underline block mb-2">
-                                    +91 7982646008
+                                <a href={`tel:${settings.phone.replace(/[^0-9+]/g, '')}`} className="text-2xl font-semibold hover:underline block mb-2">
+                                    {settings.phone}
                                 </a>
                                 <p className="text-cyan-100 text-sm">Mon-Sat, 9:00 AM - 7:00 PM IST</p>
                             </CardContent>
@@ -97,8 +114,8 @@ export default function ContactPage() {
                                     <Mail className="h-7 w-7" />
                                 </div>
                                 <h3 className="text-lg font-bold mb-2">Email Us</h3>
-                                <a href="mailto:info@prishatech.in" className="text-xl font-semibold hover:underline block mb-2">
-                                    info@prishatech.in
+                                <a href={`mailto:${settings.email}`} className="text-xl font-semibold hover:underline block mb-2">
+                                    {settings.email}
                                 </a>
                                 <p className="text-slate-300 text-sm">We reply within 24 hours</p>
                             </CardContent>
@@ -110,15 +127,13 @@ export default function ContactPage() {
                                     <MapPin className="h-7 w-7 text-navy-900" />
                                 </div>
                                 <h3 className="text-lg font-bold text-navy-900 mb-2">Visit Us</h3>
-                                <p className="text-slate-600 mb-3">
-                                    House no 708/c, Gali No 17,<br />
-                                    Ashok Vihar, Phase-2,<br />
-                                    Gurgaon, Haryana 122001
+                                <p className="text-slate-600 mb-3 whitespace-pre-line">
+                                    {settings.address}
                                 </p>
                                 <div className="pt-3 border-t border-slate-100">
                                     <p className="text-sm text-slate-500">
                                         <Building2 className="h-4 w-4 inline mr-1" />
-                                        GSTIN: 06GGEPR7125B1ZI
+                                        GSTIN: {settings.gst}
                                     </p>
                                 </div>
                             </CardContent>

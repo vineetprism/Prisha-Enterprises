@@ -1,8 +1,11 @@
 import Link from "next/link"
 import Image from "next/image"
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter } from "lucide-react"
+import { getCompanySettings } from "@/lib/settings"
 
-export function Footer() {
+export async function Footer() {
+    const settings = await getCompanySettings()
+
     return (
         <footer className="bg-navy-900 text-slate-200 relative overflow-hidden">
             {/* Decorative background */}
@@ -16,7 +19,7 @@ export function Footer() {
                         <Link href="/" className="inline-block bg-white rounded-lg p-2">
                             <Image
                                 src="/logo.png"
-                                alt="Prisha Enterprises"
+                                alt={settings.name}
                                 width={240}
                                 height={64}
                                 className="h-12 w-auto object-contain"
@@ -107,29 +110,25 @@ export function Footer() {
                         <ul className="space-y-3 text-sm">
                             <li className="flex items-start gap-3">
                                 <MapPin className="h-5 w-5 text-cyan-400 shrink-0" />
-                                <span className="text-slate-300">
-                                    House no 708/c, Gali No 17,
-                                    <br />
-                                    Ashok Vihar, Phase-2,
-                                    <br />
-                                    Gurgaon, Haryana 122001
+                                <span className="text-slate-300 whitespace-pre-line">
+                                    {settings.address}
                                 </span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Phone className="h-5 w-5 text-cyan-400 shrink-0" />
-                                <a href="tel:+917982646008" className="text-slate-300 hover:text-cyan-400 transition-colors">
-                                    +91 7982646008
+                                <a href={`tel:${settings.phone.replace(/[^0-9+]/g, '')}`} className="text-slate-300 hover:text-cyan-400 transition-colors">
+                                    {settings.phone}
                                 </a>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Mail className="h-5 w-5 text-cyan-400 shrink-0" />
-                                <a href="mailto:info@prishatech.in" className="text-slate-300 hover:text-cyan-400 transition-colors">
-                                    info@prishatech.in
+                                <a href={`mailto:${settings.email}`} className="text-slate-300 hover:text-cyan-400 transition-colors">
+                                    {settings.email}
                                 </a>
                             </li>
                         </ul>
                         <p className="text-xs text-slate-500 mt-2">
-                            GSTIN: 06GGEPR7125B1ZI
+                            GSTIN: {settings.gst}
                         </p>
                     </div>
                 </div>
@@ -137,7 +136,7 @@ export function Footer() {
                 <div className="my-8 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
                 <div className="flex flex-col items-center justify-between gap-4 md:flex-row text-xs text-slate-400">
-                    <p>© {new Date().getFullYear()} Prisha Enterprises. All rights reserved.</p>
+                    <p>© {new Date().getFullYear()} {settings.name}. All rights reserved.</p>
                     <p className="flex items-center gap-1">
                         Designed & Developed with
                         <span className="text-cyan-400">♥</span>

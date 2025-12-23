@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -40,14 +40,26 @@ export default function AdminSettingsPage() {
 
     const companyForm = useForm<CompanyData>({
         defaultValues: {
-            name: "Prisha Enterprises",
-            email: "contact@prishaenterprises.in",
-            phone: "+91 98765 43210",
-            gst: "07AADCP1234F1Z5",
-            address: "B-123, Sector 63, Noida, Uttar Pradesh, India - 201301",
-            website: "www.prishaenterprises.in"
+            name: "",
+            email: "",
+            phone: "",
+            gst: "",
+            address: "",
+            website: ""
         }
     })
+
+    // Fetch initial settings
+    useEffect(() => {
+        fetch('/api/settings')
+            .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    companyForm.reset(data)
+                }
+            })
+            .catch(err => console.error("Failed to fetch settings", err))
+    }, [companyForm])
 
     const profileForm = useForm<ProfileData>({
         defaultValues: {
@@ -67,10 +79,25 @@ export default function AdminSettingsPage() {
 
     const handleCompanySave = async (data: CompanyData) => {
         setCompanySaving(true)
-        await new Promise(r => setTimeout(r, 1000))
-        setCompanySaving(false)
-        setCompanySaved(true)
-        setTimeout(() => setCompanySaved(false), 3000)
+        try {
+            const res = await fetch('/api/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+
+            if (res.ok) {
+                setCompanySaved(true)
+                setTimeout(() => setCompanySaved(false), 3000)
+            } else {
+                alert("Failed to save settings")
+            }
+        } catch (error) {
+            console.error(error)
+            alert("Error saving settings")
+        } finally {
+            setCompanySaving(false)
+        }
     }
 
     const handleProfileSave = async (data: ProfileData) => {
