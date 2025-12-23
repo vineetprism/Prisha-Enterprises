@@ -538,6 +538,46 @@ export default function AdminProductsPage() {
                                 placeholder="/products/server.jpg or https://example.com/image.jpg"
                             />
                             <p className="text-xs text-slate-500">Enter image path from /products folder or external URL</p>
+                            <div className="mt-2">
+                                <Input
+                                    type="file"
+                                    className="hidden"
+                                    id="image-upload"
+                                    accept="image/*"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0]
+                                        if (!file) return
+
+                                        // Set loading state if you have one, or just show uploading text
+                                        const formData = new FormData()
+                                        formData.append('file', file)
+
+                                        try {
+                                            const res = await fetch('/api/upload', {
+                                                method: 'POST',
+                                                body: formData
+                                            })
+                                            const data = await res.json()
+
+                                            if (data.url) {
+                                                setFormData(prev => ({ ...prev, imageUrl: data.url }))
+                                            }
+                                        } catch (err) {
+                                            console.error('Upload failed', err)
+                                            alert('Upload failed')
+                                        }
+                                    }}
+                                />
+                                <Label
+                                    htmlFor="image-upload"
+                                    className="inline-flex cursor-pointer items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
+                                        Upload Image from Device
+                                    </span>
+                                </Label>
+                            </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -658,6 +698,45 @@ export default function AdminProductsPage() {
                                 placeholder="/products/server.jpg or https://example.com/image.jpg"
                             />
                             <p className="text-xs text-slate-500">Enter image path from /products folder or external URL</p>
+                            <div className="mt-2">
+                                <Input
+                                    type="file"
+                                    className="hidden"
+                                    id="edit-image-upload"
+                                    accept="image/*"
+                                    onChange={async (e) => {
+                                        const file = e.target.files?.[0]
+                                        if (!file) return
+
+                                        const formData = new FormData()
+                                        formData.append('file', file)
+
+                                        try {
+                                            const res = await fetch('/api/upload', {
+                                                method: 'POST',
+                                                body: formData
+                                            })
+                                            const data = await res.json()
+
+                                            if (data.url) {
+                                                setFormData(prev => ({ ...prev, imageUrl: data.url }))
+                                            }
+                                        } catch (err) {
+                                            console.error('Upload failed', err)
+                                            alert('Upload failed')
+                                        }
+                                    }}
+                                />
+                                <Label
+                                    htmlFor="edit-image-upload"
+                                    className="inline-flex cursor-pointer items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2"
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" x2="12" y1="3" y2="15" /></svg>
+                                        Upload New Image
+                                    </span>
+                                </Label>
+                            </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
