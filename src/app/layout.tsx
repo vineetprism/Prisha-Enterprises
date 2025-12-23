@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { LayoutWrapper } from "@/components/layout/LayoutWrapper";
 
@@ -19,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}>
         <LayoutWrapper>{children}</LayoutWrapper>
+        <Analytics />
       </body>
     </html>
   );
