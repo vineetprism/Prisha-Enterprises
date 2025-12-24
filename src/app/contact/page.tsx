@@ -30,14 +30,15 @@ export default function ContactPage() {
     const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormData>()
 
     useEffect(() => {
-        fetch('/api/settings')
+        fetch('/api/settings', { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (data && data.phone) {
+                    console.log("Settings fetched:", data)
                     setSettings(data)
                 }
             })
-            .catch(err => console.error(err))
+            .catch(err => console.error("Error fetching settings:", err))
     }, [])
 
     const onSubmit = async (data: ContactFormData) => {

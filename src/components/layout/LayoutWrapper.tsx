@@ -1,18 +1,21 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+interface LayoutWrapperProps {
+    children: React.ReactNode
+    header: React.ReactNode
+    footer: React.ReactNode
+}
 
-export function LayoutWrapper({ children }: { children: React.ReactNode }) {
+export function LayoutWrapper({ children, header, footer }: LayoutWrapperProps) {
     const pathname = usePathname();
     const isAdminRoute = pathname?.startsWith("/admin");
 
     return (
         <>
-            {!isAdminRoute && <Header />}
+            {!isAdminRoute && header}
             <main className="flex-1">{children}</main>
-            {!isAdminRoute && <Footer />}
+            {!isAdminRoute && footer}
         </>
     );
 }

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { getCompanySettings } from "@/lib/settings"
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
     try {
         const settings = await getCompanySettings()

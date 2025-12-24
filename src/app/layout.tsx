@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   description: "IT Hardware Rentals, Sales, and Services",
 };
 
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+
+// ... existing imports
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -18,7 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}>
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <LayoutWrapper
+          header={<Header />}
+          footer={<Footer />}
+        >
+          {children}
+        </LayoutWrapper>
       </body>
     </html>
   );

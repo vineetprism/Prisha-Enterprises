@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation"
 
 interface AdminAuthContextType {
     isAuthenticated: boolean
-    login: (username: string, password: string) => boolean
+    login: (username: string, password: string) => Promise<boolean>
     logout: () => void
     isLoading: boolean
 }
@@ -46,14 +46,27 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
         }
     }, [isAuthenticated, isLoading, pathname, router])
 
-    const login = (username: string, password: string): boolean => {
-        if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-            setIsAuthenticated(true)
-            localStorage.setItem("adminAuth", "true")
-            router.push("/admin")
-            return true
+    const login = async (username: string, password: string): Promise<boolean> => {
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+
+            const data = await res.json()
+
+            if (data.success) {
+                setIsAuthenticated(true)
+                localStorage.setItem("adminAuth", "true")
+                router.push("/admin")
+                return true
+            }
+            return false
+        } catch (error) {
+            console.error("Login failed:", error)
+            return false
         }
-        return false
     }
 
     const logout = () => {

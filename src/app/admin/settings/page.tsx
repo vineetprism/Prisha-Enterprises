@@ -21,6 +21,7 @@ interface CompanyData {
 interface ProfileData {
     fullName: string
     email: string
+    username: string
     role: string
 }
 
@@ -51,7 +52,7 @@ export default function AdminSettingsPage() {
 
     // Fetch initial settings
     useEffect(() => {
-        fetch('/api/settings')
+        fetch('/api/settings', { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (data) {
@@ -65,6 +66,7 @@ export default function AdminSettingsPage() {
         defaultValues: {
             fullName: "Admin User",
             email: "admin@prishaenterprises.in",
+            username: "admin",
             role: "Administrator"
         }
     })
@@ -118,11 +120,28 @@ export default function AdminSettingsPage() {
             return
         }
         setPasswordSaving(true)
-        await new Promise(r => setTimeout(r, 1000))
-        setPasswordSaving(false)
-        setPasswordSaved(true)
-        passwordForm.reset()
-        setTimeout(() => setPasswordSaved(false), 3000)
+        try {
+            const res = await fetch('/api/auth/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+
+            const responseData = await res.json()
+
+            if (res.ok && responseData.success) {
+                setPasswordSaved(true)
+                passwordForm.reset()
+                setTimeout(() => setPasswordSaved(false), 3000)
+            } else {
+                alert(responseData.error || "Failed to change password")
+            }
+        } catch (error) {
+            console.error("Error changing password:", error)
+            alert("An error occurred while changing password")
+        } finally {
+            setPasswordSaving(false)
+        }
     }
 
     return (
@@ -232,6 +251,10 @@ export default function AdminSettingsPage() {
                             <div className="space-y-2">
                                 <Label>Full Name</Label>
                                 <Input {...profileForm.register("fullName")} className="h-11" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Username</Label>
+                                <Input {...profileForm.register("username")} className="h-11" />
                             </div>
                             <div className="space-y-2">
                                 <Label>Email Address</Label>
